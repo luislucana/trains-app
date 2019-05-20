@@ -58,6 +58,8 @@ public class Grafo {
 
 	private void popularVerticesNaoVisitados() {
 		for (Rota rota : rotas) {
+			rota.getOrigem().setVisitado(Boolean.FALSE);
+			rota.getDestino().setVisitado(Boolean.FALSE);
 			this.verticesNaoVisitados.add(rota.getOrigem());
 			this.verticesNaoVisitados.add(rota.getDestino());
 		}
@@ -137,7 +139,7 @@ public class Grafo {
 	 * 
 	 * @param nomeVerticeInicial
 	 */
-	public void rebuild(String nomeVerticeInicial) {
+	public void build(String nomeVerticeInicial) {
 		
 		for (int i = 0; i < rotas.size(); i++) {
 			if (rotas.get(i).getOrigem().getName().equals(nomeVerticeInicial)) {
@@ -171,9 +173,48 @@ public class Grafo {
 			}
 			
 			distanciaTotal = distanciaTotal + distancia;
+			i++;
 		}
 		
 		return distanciaTotal;
+	}
+	
+	private Integer trips(String nomeOrigem, String nomeDestino, Integer stops) {
+		Integer trips = Integer.valueOf(0);
+		
+		Town townOrigem = new Town(nomeOrigem);
+		Town townDestino = new Town(nomeDestino);
+		
+		List<Town> destinosVizinhos = getDestinosVizinhos(townOrigem);
+		
+		if (destinosVizinhos == null || destinosVizinhos.isEmpty()) {
+			return null;
+		}
+		
+		int i = 0;
+		Town townVizinho = destinosVizinhos.get(i);
+		for (int j = 0; j < destinosVizinhos.size(); j++) {
+			do {
+				//destinosVizinhos.
+				
+				if (!townVizinho.getName().equals(townDestino.getName())) {
+					destinosVizinhos = getDestinosVizinhos(townVizinho);
+				}
+				
+				i++;
+				trips++;
+			} while (destinosVizinhos != null && i < destinosVizinhos.size() && true);
+		}
+		
+		for (int j = 0; j < destinosVizinhos.size(); j++) {
+			while (destinosVizinhos != null && !destinosVizinhos.contains(townDestino)) {
+				destinosVizinhos = getDestinosVizinhos(destinosVizinhos.get(j));
+			}
+		}
+		
+		
+		
+		return trips;
 	}
 
 	/**
@@ -216,14 +257,14 @@ public class Grafo {
 		// and C-E-B-C (3 stops).
 		String startVerticeName = "C";
 		String endVerticeName = "C";
-		rebuild(startVerticeName);
+		build(startVerticeName);
 		
 		// 7) The number of trips starting at A and ending at C with exactly 4 stops. In
 		// the sample data below, there are three such trips: A to C (via B,C,D); A to C
 		// (via D,C,D); and A to C (via D,E,B).
 		startVerticeName = "A";
 		endVerticeName = "C";
-		rebuild(startVerticeName);
+		build(startVerticeName);
 		
 		// 8) The length of the shortest route (in terms of distance to travel) from A
 		// to C.
