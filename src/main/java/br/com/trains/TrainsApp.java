@@ -1,8 +1,5 @@
 package br.com.trains;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 
  * 
@@ -13,8 +10,6 @@ public class TrainsApp {
 
 	public static void main(String[] args) {
 		System.out.println("Informe um grafo");
-		
-		List<Rota> rotas = new ArrayList<Rota>();
 		
 		Grafo grafo = new Grafo();
 		
@@ -80,5 +75,7 @@ public class TrainsApp {
 		rota = new Rota(townOrigem, townDestino, Integer.valueOf(7));
 		
 		grafo.addRota(rota);
+		// Input: AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7
+		grafo.executar();
 	}
 }
