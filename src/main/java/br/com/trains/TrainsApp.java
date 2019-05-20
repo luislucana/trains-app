@@ -1,7 +1,6 @@
 package br.com.trains;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 /**
  * 
@@ -17,7 +16,7 @@ public class TrainsApp {
 		// Input: AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7
 		String[] splittedInput = readInput();
 		
-		List<Rota> rotas = parseToRotas(splittedInput);
+		LinkedList<Rota> rotas = parseToRotas(splittedInput);
 		
 		Grafo grafo = new Grafo();
 		grafo.build(rotas);
@@ -42,8 +41,8 @@ public class TrainsApp {
 		return splittedInput;
 	}
 	
-	private static List<Rota> parseToRotas(String[] rotasStr) {
-		List<Rota> listaRotas = new ArrayList<Rota>();
+	private static LinkedList<Rota> parseToRotas(String[] rotasStr) {
+		LinkedList<Rota> listaRotas = new LinkedList<Rota>();
 		
 		for (String rotaStr : rotasStr) {
 			String origem = rotaStr.substring(0, 1);

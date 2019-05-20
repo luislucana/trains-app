@@ -2,6 +2,7 @@ package br.com.trains;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,18 +14,18 @@ import java.util.Set;
  */
 public class Grafo {
 	// arestas
-	private List<Rota> rotas = new ArrayList<Rota>();
+	private LinkedList<Rota> rotas = new LinkedList<Rota>();
 
 	private Set<Town> verticesNaoVisitados = new HashSet<Town>();
 
 	public Grafo() {
 	}
 
-	public List<Rota> getRotas() {
+	public LinkedList<Rota> getRotas() {
 		return rotas;
 	}
 	
-	public void setRotas(List<Rota> rotas) {
+	public void setRotas(LinkedList<Rota> rotas) {
 		this.rotas = rotas;
 	}
 
@@ -114,9 +115,7 @@ public class Grafo {
 		}
 	}
 
-	public void build(List<Rota> rotas) {
-		setRotas(rotas);
-		
+	private void build() {
 		popularVerticesNaoVisitados();
 
 		for (Town vertice : verticesNaoVisitados) {
@@ -129,6 +128,29 @@ public class Grafo {
 		}
 	}
 	
+	public void build(LinkedList<Rota> rotas) {
+		setRotas(rotas);
+		build();
+	}
+	
+	/**
+	 * 
+	 * @param nomeVerticeInicial
+	 */
+	public void rebuild(String nomeVerticeInicial) {
+		
+		for (int i = 0; i < rotas.size(); i++) {
+			if (rotas.get(i).getOrigem().getName().equals(nomeVerticeInicial)) {
+				rotas.addFirst(rotas.remove(i));
+			}
+		}
+		
+		build();
+	}
+	
+	/*
+	 * O parametro 'caminho' deve estar no formato X-X-X, onde X corresponde ao nome do vertice (Town).
+	 */
 	public Integer getDistanciaVertices(String caminho) {
 		Integer distanciaTotal = Integer.valueOf(0);
 		
@@ -154,29 +176,54 @@ public class Grafo {
 		return distanciaTotal;
 	}
 
+	/**
+	 * 
+	 */
 	public void executar() {
+		String msgNoSuchRoute = "NO SUCH ROUTE";
 		// 1) The distance of the route A-B-C.
-		Integer distanciaVertices = getDistanciaVertices("A-B-C");
+		String entrada1 = "A-B-C";
+		Integer distanciaVertices = getDistanciaVertices(entrada1);
+		
+		System.out.println(distanciaVertices != null ? "Output #1: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
 		
 		// 2) The distance of the route A-D.
-		distanciaVertices = getDistanciaVertices("A-D");
+		String entrada2 = "A-D";
+		distanciaVertices = getDistanciaVertices(entrada2);
+		
+		System.out.println(distanciaVertices != null ? "Output #2: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
 		
 		// 3) The distance of the route A-D-C.
-		distanciaVertices = getDistanciaVertices("A-D-C");
+		String entrada3 = "A-D-C";
+		distanciaVertices = getDistanciaVertices(entrada3);
+		
+		System.out.println(distanciaVertices != null ? "Output #3: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
 		
 		// 4) The distance of the route A-E-B-C-D.
-		distanciaVertices = getDistanciaVertices("A-E-B-C-D");
+		String entrada4 = "A-E-B-C-D";
+		distanciaVertices = getDistanciaVertices(entrada4);
+		
+		System.out.println(distanciaVertices != null ? "Output #4: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
 		
 		// 5) The distance of the route A-E-D.
-		distanciaVertices = getDistanciaVertices("A-E-D");
+		String entrada5 = "A-E-D";
+		distanciaVertices = getDistanciaVertices(entrada5);
+		
+		System.out.println(distanciaVertices != null ? "Output #5: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
 		
 		// 6) The number of trips starting at C and ending at C with a maximum of 3
 		// stops. In the sample data below, there are two such trips: C-D-C (2 stops).
 		// and C-E-B-C (3 stops).
+		String startVerticeName = "C";
+		String endVerticeName = "C";
+		rebuild(startVerticeName);
 		
 		// 7) The number of trips starting at A and ending at C with exactly 4 stops. In
 		// the sample data below, there are three such trips: A to C (via B,C,D); A to C
 		// (via D,C,D); and A to C (via D,E,B).
+		startVerticeName = "A";
+		endVerticeName = "C";
+		rebuild(startVerticeName);
 		
 		// 8) The length of the shortest route (in terms of distance to travel) from A
 		// to C.
