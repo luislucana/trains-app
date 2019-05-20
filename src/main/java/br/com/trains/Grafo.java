@@ -51,7 +51,7 @@ public class Grafo {
 		return cidadesVizinhas;
 	}
 
-	private void popularSetVerticesNaoVisitados() {
+	private void popularVerticesNaoVisitados() {
 		for (Rota rota : rotas) {
 			this.verticesNaoVisitados.add(rota.getOrigem());
 			this.verticesNaoVisitados.add(rota.getDestino());
@@ -111,7 +111,7 @@ public class Grafo {
 	}
 
 	public void build() {
-		popularSetVerticesNaoVisitados();
+		popularVerticesNaoVisitados();
 
 		while (!verticesNaoVisitados.isEmpty()) {
 			for (Town vertice : verticesNaoVisitados) {
@@ -124,11 +124,36 @@ public class Grafo {
 			}
 		}
 	}
+	
+	public List<Rota> getRotas(String caminho) {
+		
+		if (caminho == null || caminho.trim().length() == 0)
+			throw new RuntimeException("Informe um caminho valido.");
+		
+		String[] vertices = caminho.split("-");
+		
+		
+		
+		for (int i = 0; i < vertices.length; i++) {
+			
+		}
+		
+		List<Rota> rotasCaminho = new ArrayList<Rota>();
+		
+		for (Rota rota : this.rotas) {
+			String nomeVerticeOrigem = rota.getOrigem().getName();
+			String nomeVerticeDestino = rota.getDestino().getName();
+			
+		}
+		
+		return rotas;
+	}
 
 	public void executar() {
 		this.build();
 
 		// 1) The distance of the route A-B-C.
+		
 		
 		// 2) The distance of the route A-D.
 		
