@@ -23,6 +23,10 @@ public class Grafo {
 	public List<Rota> getRotas() {
 		return rotas;
 	}
+	
+	public void setRotas(List<Rota> rotas) {
+		this.rotas = rotas;
+	}
 
 	public void addRota(Rota novaRota) {
 		// TODO verificar se rota ja existe
@@ -110,58 +114,61 @@ public class Grafo {
 		}
 	}
 
-	public void build() {
+	public void build(List<Rota> rotas) {
+		setRotas(rotas);
+		
 		popularVerticesNaoVisitados();
 
-		while (!verticesNaoVisitados.isEmpty()) {
-			for (Town vertice : verticesNaoVisitados) {
-				Town verticeMenorDistanciaEstimada = getVerticeMenorDistanciaEstimada(vertice);
+		for (Town vertice : verticesNaoVisitados) {
+			Town verticeMenorDistanciaEstimada = getVerticeMenorDistanciaEstimada(vertice);
 
-				vertice.setVisitado(true);
-				verticesNaoVisitados.remove(vertice);
+			vertice.setVisitado(true);
+			verticesNaoVisitados.remove(vertice);
 
-				reajustarMenoresDistanciasEstimadas(verticeMenorDistanciaEstimada);
-			}
+			reajustarMenoresDistanciasEstimadas(verticeMenorDistanciaEstimada);
 		}
 	}
 	
-	public List<Rota> getRotas(String caminho) {
+	public Integer getDistanciaVertices(String caminho) {
+		Integer distanciaTotal = Integer.valueOf(0);
 		
-		if (caminho == null || caminho.trim().length() == 0)
-			throw new RuntimeException("Informe um caminho valido.");
+		List<Town> verticesList = new ArrayList<Town>();
 		
-		String[] vertices = caminho.split("-");
-		
-		
-		
-		for (int i = 0; i < vertices.length; i++) {
-			
+		String[] verticeNames = caminho.split("-");
+		for (String verticeName : verticeNames) {
+			verticesList.add(new Town(verticeName));
 		}
 		
-		List<Rota> rotasCaminho = new ArrayList<Rota>();
-		
-		for (Rota rota : this.rotas) {
-			String nomeVerticeOrigem = rota.getOrigem().getName();
-			String nomeVerticeDestino = rota.getDestino().getName();
+		int i = 0;
+		while (i < verticesList.size() - 1) {
+			Integer distancia = getDistancia(verticesList.get(i), verticesList.get(i + 1));
 			
+			if (distancia == null) {
+				distanciaTotal = null;
+				break;
+			}
+			
+			distanciaTotal = distanciaTotal + distancia;
 		}
 		
-		return rotas;
+		return distanciaTotal;
 	}
 
 	public void executar() {
-		this.build();
-
 		// 1) The distance of the route A-B-C.
-		
+		Integer distanciaVertices = getDistanciaVertices("A-B-C");
 		
 		// 2) The distance of the route A-D.
+		distanciaVertices = getDistanciaVertices("A-D");
 		
 		// 3) The distance of the route A-D-C.
+		distanciaVertices = getDistanciaVertices("A-D-C");
 		
 		// 4) The distance of the route A-E-B-C-D.
+		distanciaVertices = getDistanciaVertices("A-E-B-C-D");
 		
 		// 5) The distance of the route A-E-D.
+		distanciaVertices = getDistanciaVertices("A-E-D");
 		
 		// 6) The number of trips starting at C and ending at C with a maximum of 3
 		// stops. In the sample data below, there are two such trips: C-D-C (2 stops).
