@@ -65,12 +65,10 @@ public class Grafo {
 		}
 	}
 
-	private Town getVerticeMenorDistanciaEstimada(Town verticeOrigem) {
+	private Town getVerticeMenorDistanciaEstimada(Set<Town> verticesNaoVisitados) {
 		Town verticeMenorDistanciaEstimada = null;
 
-		List<Town> verticesVizinhos = getDestinosVizinhos(verticeOrigem);
-
-		for (Town verticeVizinho : verticesVizinhos) {
+		for (Town verticeVizinho : verticesNaoVisitados) {
 			if (verticeMenorDistanciaEstimada == null) {
 				verticeMenorDistanciaEstimada = verticeVizinho;
 			} else {
@@ -112,6 +110,8 @@ public class Grafo {
 
 					proximoVertice.setMenorDistanciaEstimada(
 							vertice.getMenorDistanciaEstimada() + getDistancia(vertice, proximoVertice));
+					
+					verticesNaoVisitados.add(proximoVertice);
 				}
 			}
 		}
@@ -120,11 +120,11 @@ public class Grafo {
 	private void build() {
 		popularVerticesNaoVisitados();
 
-		for (Town vertice : verticesNaoVisitados) {
-			Town verticeMenorDistanciaEstimada = getVerticeMenorDistanciaEstimada(vertice);
+		while (!verticesNaoVisitados.isEmpty()) {
+			Town verticeMenorDistanciaEstimada = getVerticeMenorDistanciaEstimada(verticesNaoVisitados);
 
-			vertice.setVisitado(true);
-			verticesNaoVisitados.remove(vertice);
+			verticeMenorDistanciaEstimada.setVisitado(true);
+			verticesNaoVisitados.remove(verticeMenorDistanciaEstimada);
 
 			reajustarMenoresDistanciasEstimadas(verticeMenorDistanciaEstimada);
 		}
@@ -135,19 +135,30 @@ public class Grafo {
 		build();
 	}
 	
-	/**
-	 * 
-	 * @param nomeVerticeInicial
-	 */
 	public void build(String nomeVerticeInicial) {
-		
+		setVerticeInicial(nomeVerticeInicial);
+		build();
+	}
+	
+	public void build(String nomeVerticeInicial, LinkedList<Rota> rotas) {
+		setVerticeInicial(nomeVerticeInicial);
+		setRotas(rotas);
+		build();
+	}
+	
+	private void setVerticeInicial(String nomeVerticeInicial) {
 		for (int i = 0; i < rotas.size(); i++) {
 			if (rotas.get(i).getOrigem().getName().equals(nomeVerticeInicial)) {
 				rotas.addFirst(rotas.remove(i));
+				break;
 			}
 		}
-		
-		build();
+	}
+	
+	private void setMesmaDistanciaEntreVertices(Integer distancia) {
+		for (Rota rota : rotas) {
+			rota.setDistancia(distancia);
+		}
 	}
 	
 	/*
@@ -185,34 +196,22 @@ public class Grafo {
 		Town townOrigem = new Town(nomeOrigem);
 		Town townDestino = new Town(nomeDestino);
 		
+		Integer passo = Integer.valueOf(1);
+		setMesmaDistanciaEntreVertices(passo);
+		
 		List<Town> destinosVizinhos = getDestinosVizinhos(townOrigem);
 		
 		if (destinosVizinhos == null || destinosVizinhos.isEmpty()) {
 			return null;
 		}
 		
-		int i = 0;
-		Town townVizinho = destinosVizinhos.get(i);
-		for (int j = 0; j < destinosVizinhos.size(); j++) {
-			do {
-				//destinosVizinhos.
-				
-				if (!townVizinho.getName().equals(townDestino.getName())) {
-					destinosVizinhos = getDestinosVizinhos(townVizinho);
-				}
-				
-				i++;
-				trips++;
-			} while (destinosVizinhos != null && i < destinosVizinhos.size() && true);
-		}
-		
-		for (int j = 0; j < destinosVizinhos.size(); j++) {
+		int j=0;
+		for (int i = 0; i < destinosVizinhos.size(); i++) {
 			while (destinosVizinhos != null && !destinosVizinhos.contains(townDestino)) {
-				destinosVizinhos = getDestinosVizinhos(destinosVizinhos.get(j));
+				destinosVizinhos = getDestinosVizinhos(destinosVizinhos.get(i));
+				j++;
 			}
 		}
-		
-		
 		
 		return trips;
 	}
