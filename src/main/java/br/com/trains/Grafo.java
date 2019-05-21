@@ -1,9 +1,11 @@
 package br.com.trains;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -17,6 +19,12 @@ public class Grafo {
 	private LinkedList<Rota> rotas = new LinkedList<Rota>();
 
 	private Set<Town> verticesNaoVisitados = new HashSet<Town>();
+	
+	// para cada vertice, armazenar a menor qtde de passos necessaria para se chegar ao mesmo
+	private Map<Town, Integer> qtdeArestas = new HashMap<Town, Integer>();
+	
+	// para todos os vertices, armazenar todas suas distancias
+	private Map<Town, List<Integer>> todasDistanciasVerticeMap = new HashMap<Town, List<Integer>>();
 
 	public Grafo() {
 	}
@@ -46,8 +54,8 @@ public class Grafo {
 		if (this.rotas != null && !this.rotas.isEmpty()) {
 			// iterar sobre as arestas
 			for (Rota rota : rotas) {
-				// if (rota.getOrigem().equals(town)) {
-				if (rota.getOrigem().equals(town) && !rota.getDestino().isVisitado()) {
+				//if (rota.getOrigem().equals(town) && !rota.getDestino().isVisitado()) {
+				if (rota.getOrigem().equals(town)) {
 					cidadesVizinhas.add(rota.getDestino());
 				}
 			}
@@ -56,13 +64,19 @@ public class Grafo {
 		return cidadesVizinhas;
 	}
 
-	private void popularVerticesNaoVisitados() {
+	private void reiniciarVerticesNaoVisitados() {
+		verticesNaoVisitados.clear();
 		for (Rota rota : rotas) {
 			rota.getOrigem().setVisitado(Boolean.FALSE);
 			rota.getDestino().setVisitado(Boolean.FALSE);
+			rota.getOrigem().setMenorDistanciaEstimada(Integer.MAX_VALUE);
+			rota.getDestino().setMenorDistanciaEstimada(Integer.MAX_VALUE);
 			this.verticesNaoVisitados.add(rota.getOrigem());
 			this.verticesNaoVisitados.add(rota.getDestino());
 		}
+		
+		// estimativa do no/vertice inicial deve ser = 0
+		rotas.get(0).getOrigem().setMenorDistanciaEstimada(Integer.valueOf(0));
 	}
 
 	private Town getVerticeMenorDistanciaEstimada(Set<Town> verticesNaoVisitados) {
@@ -74,8 +88,7 @@ public class Grafo {
 			} else {
 				Integer distanciaEstimadaVizinho = verticeVizinho.getMenorDistanciaEstimada();
 
-				if (distanciaEstimadaVizinho.intValue() < verticeMenorDistanciaEstimada.getMenorDistanciaEstimada()
-						.intValue()) {
+				if (distanciaEstimadaVizinho.intValue() < verticeMenorDistanciaEstimada.getMenorDistanciaEstimada().intValue()) {
 					verticeMenorDistanciaEstimada = verticeVizinho;
 				}
 			}
@@ -101,24 +114,40 @@ public class Grafo {
 	}
 
 	public void reajustarMenoresDistanciasEstimadas(Town vertice) {
+		Integer qtdeArestasCaminho =Integer.valueOf(0);
 		List<Town> verticesVizinhos = getDestinosVizinhos(vertice);
 
 		if (verticesVizinhos != null && !verticesVizinhos.isEmpty()) {
+			List<Integer> todasDistanciasVertice = new ArrayList<Integer>();
+			
 			for (Town proximoVertice : verticesVizinhos) {
+				todasDistanciasVertice.clear();
+				
+				if (todasDistanciasVerticeMap.containsKey(proximoVertice)) {
+					todasDistanciasVertice = todasDistanciasVerticeMap.get(proximoVertice);
+				}
+				todasDistanciasVertice.add(vertice.getMenorDistanciaEstimada() + getDistancia(vertice, proximoVertice));
+				todasDistanciasVerticeMap.put(proximoVertice, todasDistanciasVertice);
+				
 				if (proximoVertice.getMenorDistanciaEstimada() > vertice.getMenorDistanciaEstimada()
 						+ getDistancia(vertice, proximoVertice)) {
 
-					proximoVertice.setMenorDistanciaEstimada(
-							vertice.getMenorDistanciaEstimada() + getDistancia(vertice, proximoVertice));
+					// estimativa do vertice corrente ('vertice') + distancia entre 'vertice' e 'proximoVertice' (armazenada na aresta)
+					Integer menorDistanciaDeFato = vertice.getMenorDistanciaEstimada() + getDistancia(vertice, proximoVertice);
+					qtdeArestasCaminho++;
+					
+					proximoVertice.setMenorDistanciaEstimada(menorDistanciaDeFato);
 					
 					verticesNaoVisitados.add(proximoVertice);
 				}
 			}
 		}
+		
+		qtdeArestas.put(vertice, qtdeArestasCaminho);
 	}
 
 	private void build() {
-		popularVerticesNaoVisitados();
+		reiniciarVerticesNaoVisitados();
 
 		while (!verticesNaoVisitados.isEmpty()) {
 			Town verticeMenorDistanciaEstimada = getVerticeMenorDistanciaEstimada(verticesNaoVisitados);
@@ -141,8 +170,8 @@ public class Grafo {
 	}
 	
 	public void build(String nomeVerticeInicial, LinkedList<Rota> rotas) {
-		setVerticeInicial(nomeVerticeInicial);
 		setRotas(rotas);
+		setVerticeInicial(nomeVerticeInicial);
 		build();
 	}
 	
@@ -152,12 +181,6 @@ public class Grafo {
 				rotas.addFirst(rotas.remove(i));
 				break;
 			}
-		}
-	}
-	
-	private void setMesmaDistanciaEntreVertices(Integer distancia) {
-		for (Rota rota : rotas) {
-			rota.setDistancia(distancia);
 		}
 	}
 	
@@ -190,28 +213,30 @@ public class Grafo {
 		return distanciaTotal;
 	}
 	
-	private Integer trips(String nomeOrigem, String nomeDestino, Integer stops) {
+	private Integer getNumberOfTrips(String nomeOrigem, String nomeDestino, Integer stops) {
 		Integer trips = Integer.valueOf(0);
 		
-		Town townOrigem = new Town(nomeOrigem);
+		build(nomeOrigem);
 		Town townDestino = new Town(nomeDestino);
 		
-		Integer passo = Integer.valueOf(1);
-		setMesmaDistanciaEntreVertices(passo);
-		
-		List<Town> destinosVizinhos = getDestinosVizinhos(townOrigem);
-		
-		if (destinosVizinhos == null || destinosVizinhos.isEmpty()) {
-			return null;
-		}
-		
-		int j=0;
-		for (int i = 0; i < destinosVizinhos.size(); i++) {
-			while (destinosVizinhos != null && !destinosVizinhos.contains(townDestino)) {
-				destinosVizinhos = getDestinosVizinhos(destinosVizinhos.get(i));
-				j++;
+		if (nomeDestino.equals(nomeOrigem)) {
+			trips++; // 1
+			
+			List<Town> destinosVizinhos = getDestinosVizinhos(rotas.get(0).getOrigem());
+			int qtdePassosRestantes = 0;
+			for (Town verticeVizinho : destinosVizinhos) {
+				System.out.println("verticevizinho: " + verticeVizinho.getName());
+				build(verticeVizinho.getName());
+				if (qtdeArestas.get(townDestino) != null && qtdePassosRestantes > qtdeArestas.get(townDestino)) {
+					qtdePassosRestantes = qtdeArestas.get(townDestino);
+				}
 			}
+			System.out.println("b");
+			
+			return qtdePassosRestantes + trips;
 		}
+		
+		trips = qtdeArestas.get(townDestino);
 		
 		return trips;
 	}
@@ -257,6 +282,8 @@ public class Grafo {
 		String startVerticeName = "C";
 		String endVerticeName = "C";
 		build(startVerticeName);
+		Integer numberOfTrips = getNumberOfTrips(startVerticeName, endVerticeName, null);
+		System.out.println(String.valueOf(numberOfTrips));
 		
 		// 7) The number of trips starting at A and ending at C with exactly 4 stops. In
 		// the sample data below, there are three such trips: A to C (via B,C,D); A to C
