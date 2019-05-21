@@ -114,7 +114,7 @@ public class Grafo {
 	}
 
 	public void reajustarMenoresDistanciasEstimadas(Town vertice) {
-		Integer qtdeArestasCaminho =Integer.valueOf(0);
+		Integer qtdeArestasCaminho = Integer.valueOf(0);
 		List<Town> verticesVizinhos = getDestinosVizinhos(vertice);
 
 		if (verticesVizinhos != null && !verticesVizinhos.isEmpty()) {
@@ -225,13 +225,13 @@ public class Grafo {
 			List<Town> destinosVizinhos = getDestinosVizinhos(rotas.get(0).getOrigem());
 			int qtdePassosRestantes = 0;
 			for (Town verticeVizinho : destinosVizinhos) {
-				System.out.println("verticevizinho: " + verticeVizinho.getName());
+				//System.out.println("verticevizinho: " + verticeVizinho.getName());
 				build(verticeVizinho.getName());
 				if (qtdeArestas.get(townDestino) != null && qtdePassosRestantes > qtdeArestas.get(townDestino)) {
 					qtdePassosRestantes = qtdeArestas.get(townDestino);
 				}
 			}
-			System.out.println("b");
+			//System.out.println("b");
 			
 			return qtdePassosRestantes + trips;
 		}
@@ -250,31 +250,31 @@ public class Grafo {
 		String entrada1 = "A-B-C";
 		Integer distanciaVertices = getDistanciaVertices(entrada1);
 		
-		System.out.println(distanciaVertices != null ? "Output #1: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
+		System.out.println("Output #1: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 2) The distance of the route A-D.
 		String entrada2 = "A-D";
 		distanciaVertices = getDistanciaVertices(entrada2);
 		
-		System.out.println(distanciaVertices != null ? "Output #2: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
+		System.out.println("Output #2: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 3) The distance of the route A-D-C.
 		String entrada3 = "A-D-C";
 		distanciaVertices = getDistanciaVertices(entrada3);
 		
-		System.out.println(distanciaVertices != null ? "Output #3: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
+		System.out.println("Output #3: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 4) The distance of the route A-E-B-C-D.
 		String entrada4 = "A-E-B-C-D";
 		distanciaVertices = getDistanciaVertices(entrada4);
 		
-		System.out.println(distanciaVertices != null ? "Output #4: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
+		System.out.println("Output #4: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 5) The distance of the route A-E-D.
 		String entrada5 = "A-E-D";
 		distanciaVertices = getDistanciaVertices(entrada5);
 		
-		System.out.println(distanciaVertices != null ? "Output #5: " + String.valueOf(distanciaVertices) : msgNoSuchRoute);
+		System.out.println("Output #5: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 6) The number of trips starting at C and ending at C with a maximum of 3
 		// stops. In the sample data below, there are two such trips: C-D-C (2 stops).
@@ -283,7 +283,7 @@ public class Grafo {
 		String endVerticeName = "C";
 		build(startVerticeName);
 		Integer numberOfTrips = getNumberOfTrips(startVerticeName, endVerticeName, null);
-		System.out.println(String.valueOf(numberOfTrips));
+		System.out.println("Output #6: " + String.valueOf(numberOfTrips));
 		
 		// 7) The number of trips starting at A and ending at C with exactly 4 stops. In
 		// the sample data below, there are three such trips: A to C (via B,C,D); A to C
