@@ -231,7 +231,6 @@ public class Grafo {
 					qtdePassosRestantes = qtdeArestas.get(townDestino);
 				}
 			}
-			//System.out.println("b");
 			
 			return qtdePassosRestantes + trips;
 		}
@@ -279,21 +278,26 @@ public class Grafo {
 		// 6) The number of trips starting at C and ending at C with a maximum of 3
 		// stops. In the sample data below, there are two such trips: C-D-C (2 stops).
 		// and C-E-B-C (3 stops).
-		String startVerticeName = "C";
-		String endVerticeName = "C";
-		build(startVerticeName);
-		Integer numberOfTrips = getNumberOfTrips(startVerticeName, endVerticeName, null);
-		System.out.println("Output #6: " + String.valueOf(numberOfTrips));
+		/*
+		 * String startVerticeName = "C"; String endVerticeName = "C";
+		 * build(startVerticeName); Integer numberOfTrips =
+		 * getNumberOfTrips(startVerticeName, endVerticeName, null);
+		 * System.out.println("Output #6: " + String.valueOf(numberOfTrips));
+		 */
 		
 		// 7) The number of trips starting at A and ending at C with exactly 4 stops. In
 		// the sample data below, there are three such trips: A to C (via B,C,D); A to C
 		// (via D,C,D); and A to C (via D,E,B).
-		startVerticeName = "A";
-		endVerticeName = "C";
-		build(startVerticeName);
+		/*
+		 * startVerticeName = "A"; endVerticeName = "C"; build(startVerticeName);
+		 */
 		
 		// 8) The length of the shortest route (in terms of distance to travel) from A
 		// to C.
+		//String entrada8 = "A-C";
+		//distanciaVertices = getDistanciaVertices(entrada8);
+		
+		//System.out.println("Output #8: " + (distanciaVertices != null ? String.valueOf(distanciaVertices) : msgNoSuchRoute));
 		
 		// 9) The length of the shortest route (in terms of distance to travel) from B
 		// to B.

@@ -1,6 +1,7 @@
 package br.com.trains;
 
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * 
@@ -24,11 +25,11 @@ public class TrainsApp {
 	}
 	
 	private static String[] readInput() {
-		//Scanner scanner = new Scanner(System.in);
-		//String grafoInformado = scanner.nextLine();
-		String grafoInformado = "AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7";
+		Scanner scanner = new Scanner(System.in);
+		String grafoInformado = scanner.nextLine();
+		//String grafoInformado = "AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7";
 		
-		//scanner.close();
+		scanner.close();
 		
 		if (grafoInformado == null || grafoInformado.trim().length() == 0) {
 			throw new IllegalArgumentException("Input invalido.");
